@@ -71,6 +71,7 @@ struct wpa_sm_ctx {
 				const struct ieee80211_vht_capabilities *vht_capab,
 				const struct ieee80211_he_capabilities *he_capab,
 				size_t he_capab_len,
+				const struct ieee80211_he_6ghz_band_cap *he_6ghz_capab,
 				u8 qosinfo, int wmm, const u8 *ext_capab,
 				size_t ext_capab_len, const u8 *supp_channels,
 				size_t supp_channels_len,
@@ -173,6 +174,7 @@ int wpa_parse_wpa_ie(const u8 *wpa_ie, size_t wpa_ie_len,
 		     struct wpa_ie_data *data);
 
 void wpa_sm_aborted_cached(struct wpa_sm *sm);
+void wpa_sm_aborted_external_cached(struct wpa_sm *sm);
 int wpa_sm_rx_eapol(struct wpa_sm *sm, const u8 *src_addr,
 		    const u8 *buf, size_t len);
 int wpa_sm_parse_own_wpa_ie(struct wpa_sm *sm, struct wpa_ie_data *data);
@@ -193,6 +195,7 @@ int wpa_sm_has_ptk_installed(struct wpa_sm *sm);
 void wpa_sm_update_replay_ctr(struct wpa_sm *sm, const u8 *replay_ctr);
 
 void wpa_sm_pmksa_cache_flush(struct wpa_sm *sm, void *network_ctx);
+void wpa_sm_external_pmksa_cache_flush(struct wpa_sm *sm, void *network_ctx);
 
 int wpa_sm_get_p2p_ip_addr(struct wpa_sm *sm, u8 *buf);
 
@@ -341,6 +344,10 @@ static inline void wpa_sm_aborted_cached(struct wpa_sm *sm)
 {
 }
 
+static inline void wpa_sm_aborted_external_cached(struct wpa_sm *sm)
+{
+}
+
 static inline int wpa_sm_rx_eapol(struct wpa_sm *sm, const u8 *src_addr,
 				  const u8 *buf, size_t len)
 {
@@ -370,6 +377,11 @@ static inline int wpa_sm_has_ptk(struct wpa_sm *sm)
 
 static inline void wpa_sm_update_replay_ctr(struct wpa_sm *sm,
 					    const u8 *replay_ctr)
+{
+}
+
+static inline void wpa_sm_external_pmksa_cache_flush(struct wpa_sm *sm,
+						     void *network_ctx)
 {
 }
 

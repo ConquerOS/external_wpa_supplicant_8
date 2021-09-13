@@ -2381,6 +2381,10 @@ static int nl80211_mgmt_subscribe_non_ap(struct i802_bss *bss)
 	    (nl80211_register_action_frame(bss, (u8 *) "\x05\x02", 2) < 0))
 		ret = -1;
 
+	/* Robust AV MSCS Response */
+	if (nl80211_register_action_frame(bss, (u8 *) "\x13\x05", 2) < 0)
+		ret = -1;
+
 	nl80211_mgmt_handle_register_eloop(bss);
 
 	return ret;
@@ -4783,6 +4787,16 @@ static int wpa_driver_nl80211_sta_add(void *priv,
 				    params->he_capab, params->he_capab_len);
 			if (nla_put(msg, NL80211_ATTR_HE_CAPABILITY,
 				    params->he_capab_len, params->he_capab))
+				goto fail;
+		}
+
+		if (params->he_6ghz_capab) {
+			wpa_hexdump(MSG_DEBUG, "  * he_6ghz_capab",
+				    params->he_6ghz_capab,
+				    sizeof(*params->he_6ghz_capab));
+			if (nla_put(msg, NL80211_ATTR_HE_6GHZ_CAPABILITY,
+				    sizeof(*params->he_6ghz_capab),
+				    params->he_6ghz_capab))
 				goto fail;
 		}
 

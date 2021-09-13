@@ -499,6 +499,17 @@ struct driver_signal_override {
 	int scan_level;
 };
 
+struct robust_av_data {
+	u8 dialog_token;
+	enum scs_request_type request_type;
+	u8 up_bitmap;
+	u8 up_limit;
+	u32 stream_timeout;
+	u8 frame_classifier[48];
+	size_t frame_classifier_len;
+	bool valid_config;
+};
+
 /**
  * struct wpa_supplicant - Internal data for wpa_supplicant interface
  *
@@ -1324,6 +1335,8 @@ struct wpa_supplicant {
 	unsigned int multi_ap_ie:1;
 	unsigned int multi_ap_backhaul:1;
 	unsigned int multi_ap_fronthaul:1;
+	struct robust_av_data robust_av;
+	bool mscs_setup_done;
 };
 
 
@@ -1419,6 +1432,7 @@ void wpa_supplicant_update_config(struct wpa_supplicant *wpa_s);
 void wpa_supplicant_clear_status(struct wpa_supplicant *wpa_s);
 void wpas_connection_failed(struct wpa_supplicant *wpa_s, const u8 *bssid);
 void fils_connection_failure(struct wpa_supplicant *wpa_s);
+void fils_pmksa_cache_flush(struct wpa_supplicant *wpa_s);
 int wpas_driver_bss_selection(struct wpa_supplicant *wpa_s);
 int wpas_is_p2p_prioritized(struct wpa_supplicant *wpa_s);
 void wpas_auth_failed(struct wpa_supplicant *wpa_s, char *reason);
@@ -1643,5 +1657,14 @@ int wpa_is_fils_supported(struct wpa_supplicant *wpa_s);
 int wpa_is_fils_sk_pfs_supported(struct wpa_supplicant *wpa_s);
 
 void wpas_clear_driver_signal_override(struct wpa_supplicant *wpa_s);
+
+int wpas_send_mscs_req(struct wpa_supplicant *wpa_s);
+void wpas_populate_mscs_descriptor_ie(struct robust_av_data *robust_av,
+				      struct wpabuf *buf);
+void wpas_handle_robust_av_recv_action(struct wpa_supplicant *wpa_s,
+				       const u8 *src, const u8 *buf,
+				       size_t len);
+void wpas_handle_assoc_resp_mscs(struct wpa_supplicant *wpa_s, const u8 *bssid,
+				 const u8 *ies, size_t ies_len);
 
 #endif /* WPA_SUPPLICANT_I_H */
