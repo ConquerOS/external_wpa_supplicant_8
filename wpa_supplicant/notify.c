@@ -54,6 +54,12 @@ int wpas_notify_supplicant_initialized(struct wpa_global *global)
 	}
 #endif /* CONFIG_AIDL */
 
+#ifdef CONFIG_SUPPLICANT_VENDOR_AIDL
+	global->vendor_aidl = wpas_aidl_vendor_init(global);
+	if (!global->vendor_aidl)
+		return -1;
+#endif /* CONFIG_SUPPLICANT_VENDOR_AIDL */
+
 	return 0;
 }
 
@@ -98,8 +104,6 @@ int wpas_notify_iface_added(struct wpa_supplicant *wpa_s)
 #endif
 
 #ifdef CONFIG_SUPPLICANT_VENDOR_AIDL
-	if (!wpa_s || !wpa_s->global->vendor_aidl)
-		return 0;
 	if (wpas_aidl_vendor_register_interface(wpa_s))
 		return -1;
 #endif /* CONFIG_SUPPLICANT_VENDOR_AIDL */
